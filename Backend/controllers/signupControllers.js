@@ -2,7 +2,9 @@ const Signup = require('../models/signup');
 
 exports.createSignup = async (req, res) => {
   try {
+    
     const sp = await Signup.create(req.body);
+    console.log(sp);
     res.status(201).json(sp);
   } catch (err) {
     console.error('Error creating signup:', err);
@@ -11,20 +13,15 @@ exports.createSignup = async (req, res) => {
 };
 
 exports.getAllSignups = async (req, res) => {
-console.log('====================================');
-console.log('get');
-console.log('====================================');
-  res.json('message')
-  // try {
-  //   const dat = await Signup.find();
-  //   console.log('====================================');
-  //   console.log('dat');
-  //   console.log('====================================');
-  //   res.json(dat);
-  // } catch (error) {
-  //   console.error('Error fetching signups:', error);
-  //   res.status(400).json({ message: 'Error fetching signups', error: error.message });
-  // }
+ 
+  try {
+    const dat = await Signup.find();
+   
+    res.json(dat);
+  } catch (error) {
+    console.error('Error fetching signups:', error);
+    res.status(400).json({ message: 'Error fetching signups', error: error.message });
+  }
 };
 
 exports.login = async (req, res) => {

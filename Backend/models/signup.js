@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const signupSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true }, // Added username field
+  email: { type: String, required: true, unique: true },    // Ensure uniqueness for email
   password: { type: String, required: true }
 });
 
