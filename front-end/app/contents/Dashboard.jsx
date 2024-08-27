@@ -1,32 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, Image, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
-// Uncomment and set your API URL if you need to fetch data
-// const API_URL = 'http://localhost:3000';  
+export default function Dashboard({userId}) {
+  
+  console.log('User ID:', userId);
 
-export default function Dashboard() {
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState('user');
 
-  // Uncomment if you want to fetch username from API
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(`${API_URL}/studysignups`);
-  //       setUsername(response.data.username);  
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);
+        console.log('Response data:', response.data);
+        setUsername(response.data.username);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+  
+    if (userId) {
+      fetchData();
+    }
+  }, [userId]);
+  
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.greeting}>Hello {username ? username : 'User'} Raj !!!</Text>
-      
+      <Text style={styles.greeting}>Hello {username}!!!</Text>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.firstCard}>
         <View style={styles.cardContainer}>
           <Image
@@ -40,8 +43,6 @@ export default function Dashboard() {
           </View>
         </View>
 
-       
-
         <View style={styles.cardContainer2}>
           <Text style={styles.textcard1}>Enroll For Free</Text>
           <Text style={styles.textcard1}>1000+ Free courses for you</Text>
@@ -51,14 +52,14 @@ export default function Dashboard() {
           <Text style={styles.textcard1}>New Card Content</Text>
           <Text style={styles.textcard2}>Explore our latest features and updates</Text>
         </View>
+
         <View style={styles.cardContainer}>
-        
-        <View style={styles.card}>
-          <Text style={styles.motivationalText}>
-            Discover More
-          </Text>
+          <View style={styles.card}>
+            <Text style={styles.motivationalText}>
+              Discover More
+            </Text>
+          </View>
         </View>
-      </View>
       </ScrollView>
 
       <View style={styles.infoSection}>
@@ -99,14 +100,13 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#e5f6e0',  
-    backgroundColor:'#fff',
+    backgroundColor: '#fff',
     padding: 20,
   },
   greeting: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#004d00',  
+    color: '#004d00',
     marginBottom: 20,
   },
   firstCard: {
@@ -115,31 +115,31 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     backgroundColor: '#e5f6e0',
-    flexDirection: 'co',
+    flexDirection: 'row',
     alignItems: 'center',
     marginRight: 20,
     borderRadius: 8,
     padding: 10,
-    width: 200,   
-    height: 120,  
+    width: 200,
+    height: 120,
   },
   cardContainer2: {
-   backgroundColor: '#e5f6e0',
+    backgroundColor: '#e5f6e0',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
     borderRadius: 8,
-    width: 200, 
+    width: 200,
     height: 120,
     marginRight: 20,
   },
   cardContainer3: {
-backgroundColor: '#e5f6e0',
+    backgroundColor: '#e5f6e0',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
     borderRadius: 8,
-    width: 200,  
+    width: 200,
     height: 120,
     marginRight: 20,
   },
@@ -154,7 +154,7 @@ backgroundColor: '#e5f6e0',
     color: '#666',
   },
   card: {
-    backgroundColor: '#fff',  
+    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 8,
     shadowColor: '#000',
@@ -162,23 +162,23 @@ backgroundColor: '#e5f6e0',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     flex: 1,
-    marginLeft: 10,  
+    marginLeft: 10,
   },
   motivationalText: {
     fontSize: 12,
-    color: '#004d00', 
+    color: '#004d00',
   },
   cardImage: {
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: '#fff',  
+    backgroundColor: '#fff',
   },
   infoSection: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    backgroundColor: '#d0f0c0',  
+    backgroundColor: '#d0f0c0',
     borderRadius: 8,
     padding: 20,
   },
@@ -202,7 +202,7 @@ backgroundColor: '#e5f6e0',
     borderRadius: 10,
   },
   detailsContainer: {
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     padding: 20,
     borderRadius: 8,
     marginBottom: 20,
@@ -218,7 +218,7 @@ backgroundColor: '#e5f6e0',
     color: '#004d00',
   },
   helpContainer: {
-    backgroundColor: '#e0f7fa', // Light blue background for help section
+    backgroundColor: '#e0f7fa',
     padding: 20,
     borderRadius: 8,
   },

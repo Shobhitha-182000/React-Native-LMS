@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, TextInput, View, Text, TouchableOpacity, Image, Button } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { useUser } from '../UserContext';
 
 const API_URL = 'http://localhost:5000/';  
 
@@ -13,11 +14,12 @@ const MainPage = () => {
   const [username, setUsername] = useState('');  
   const [message, setMessage] = useState('');
   const navigation = useNavigation();
+  const { updateUserId } = useUser();
 
   const handleSignup = async () => {
     try {
       // const response = await axios.post("http://localhost:5000/studysignups", { username, email, password });
-      const response = await axios.post("http://127.0.0.1:8000/studysignups", { username, email, password });
+      const response = await axios.post("http://10.0.2.2:8000/studysignups", { username, email, password });
       setMessage('Signup successful!');
       console.log('Signup response:', response.data);
       setIsLoginScreen(true);
@@ -38,18 +40,34 @@ const MainPage = () => {
   };
   
   
-  const handleLogin = async () => {
-    try {
-      // const response = await axios.post( "http://localhost:5000/studylogin", { email, password });
-      const response = await axios.post( "http://127.0.0.1:8000/studylogin", { email, password });
-      setMessage('Login successful!');
-      // Somewhere in MainPage or another component
-       navigation.navigate('TabNavigator');
 
+  const handleLogin = async () => {
+    
+     
+    try {
+      const response = await axios.post("http://10.0.2.2:8000/studylogin", { email, password });
+      const userId = response.data._id;
+      console.log('Login successful:', userId);
+      updateUserId(userId);
+     
+      setMessage('Login successful!');
+      navigation.navigate('TabNavigator');
     } catch (error) {
-      setMessage('Login failed. Please try again.');
+      if (error.response) {
+        console.log('Error response data:', error.response.data);
+        console.log('Error response status:', error.response.status);
+        setMessage(`Login failed: ${error.response.data.message || error.message}`);
+      } else if (error.request) {
+        console.log('Error request:', error.request);
+        setMessage('Login failed: No response received from server.');
+      } else {
+        console.log('Error message:', error.message);
+        setMessage(`Login failed: ${error.message}`);
+      }
     }
   };
+
+  
   
 
   return (

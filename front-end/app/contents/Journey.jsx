@@ -1,22 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';  
-import Webdev from './Webdev';
+import { FontAwesome } from '@expo/vector-icons';
+import axios from 'axios';
+import imagePaths from './imagePaths'; // Ensure this path is correct
 
 const courses = [
-  { id: '1', name: 'Web Development', image: require('./fullstack.png'), rating: '4.5/5', price: '$49.99' },
-  { id: '2', name: 'Data Science', image: 'https://analyticstraininghub.com/wp-content/uploads/2022/10/data-analyst-skills-2020.jpg', rating: '4.7/5', price: '$59.99' },
-  { id: '3', name: 'Machine Learning', image: require('./fullstack.png'), rating: '4.8/5', price: '$69.99' },
-  { id: '4', name: 'Cloud Computing', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfJRlCpATYf8w-2kHaNZtRn1P-Icpzsu_ETA&s', rating: '4.6/5', price: '$79.99' },
+  { id: '1', name: 'Web Development', image: imagePaths.webDevelopment, description: 'Learn the fundamentals of web development.', rating: '4.5/5', price: '$49.99' },
+  { id: '2', name: 'Java Developer', image: imagePaths.javaDeveloper, description: 'Master Java programming with practical examples.', rating: '3/5', price: '$59.99' },
+  { id: '3', name: 'Machine Learning', image: imagePaths.machineLearning, description: 'Explore machine learning algorithms and their applications.', rating: '4.8/5', price: '$69.99' },
+  { id: '4', name: 'Python Developer', image: imagePaths.pythonDeveloper, description: 'Become proficient in Python programming.', rating: '4.6/5', price: '$79.99' },
+  { id: '5', name: 'Software Tester', image: imagePaths.softwareTester, description: 'Learn techniques for effective software testing.', rating: '5/5', price: '$79.99' },
+  { id: '6', name: 'Web Developer', image: imagePaths.webDeveloperMERN, description: 'Understand the principles of full-stack web development.', rating: '1/5', price: '$79.99' },
 ];
 
-const Journey = () => {
+const Journey = ({ userId }) => {
   const navigation = useNavigation();
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [numColumns, setNumColumns] = useState(2);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);
+        console.log('Response data:', response.data);
+        setEnrolledCourses(response.data.enrolledCourses || []);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+
+    if (userId) {
+      fetchData();
+    }
+
     const updateLayout = () => {
       const { width } = Dimensions.get('window');
       setNumColumns(width < 600 ? 1 : 2);
@@ -25,27 +42,32 @@ const Journey = () => {
     const subscription = Dimensions.addEventListener('change', updateLayout);
     updateLayout();
     return () => subscription?.remove();
-  }, []);
+  }, [userId]);
 
-  const handleCardPress = (id) => {
-    if (id === '1') {
-       <Webdev/>
-    } else if (id === '3') {
-      navigation.navigate('Machine');
-    }
-  };
-
-  const handleEnrollPress = (course) => {
+  const handleEnrollPress = async (course) => {
     if (enrolledCourses.includes(course.id)) {
       Alert.alert('Course Already Added', 'This course is already in your cart.');
     } else {
-      setEnrolledCourses([...enrolledCourses, course.id]);
-      Alert.alert('Course Added', 'The course has been added to your cart.');
+      try {
+        await axios.post(`http://10.0.2.2:8000/enrollCourse/${userId}`, {
+          courseId: course.id,
+          courseName: course.name,
+          description: course.description,
+          imagePath: course.image, // Pass image path if needed
+          rating: parseFloat(course.rating),
+        });
+        // Update the state to include the newly enrolled course
+        setEnrolledCourses([...enrolledCourses, course.id]);
+        Alert.alert('Course Added', 'The course has been added to your cart.');
+      } catch (error) {
+        console.log('Error enrolling course:', error);
+        Alert.alert('Enrollment Failed', 'Failed to enroll in the course. Please try again later.');
+      }
     }
   };
 
   const renderStars = (rating) => {
-    const stars = parseFloat(rating) || 0;
+    const stars = parseFloat(rating.split('/')[0]) || 0;
     return (
       <View style={styles.ratingContainer}>
         {Array.from({ length: 5 }).map((_, index) => (
@@ -67,24 +89,23 @@ const Journey = () => {
         data={courses}
         renderItem={({ item }) => (
           <View style={[styles.card, { width: (Dimensions.get('window').width / numColumns) - 15 }]}>
-            <TouchableOpacity
-              onPress={() => handleCardPress(item.id)}
-              style={styles.imageContainer}
-            >
+            <View style={styles.imageContainer}>
               <Image source={item.image} style={styles.image} />
-            </TouchableOpacity>
+            </View>
             <View style={styles.content}>
               <Text style={styles.title}>{item.name}</Text>
+              <Text style={styles.description}>{item.description}</Text>
               <View style={styles.ratingContainer}>
                 {renderStars(item.rating)}
               </View>
+              <Text style={styles.price}>{item.price}</Text>
             </View>
             <TouchableOpacity
               style={styles.buttonContainer}
               onPress={() => handleEnrollPress(item)}
             >
               <Text style={styles.buttonText}>
-                {enrolledCourses.includes(item.id) ? 'Added' : 'Enroll now'}
+                {enrolledCourses.includes(item.id) ? 'Enrolled' : 'Enroll now'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -140,24 +161,46 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#001F3F',
   },
+  description: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: '#333',
+  },
   ratingContainer: {
     flexDirection: 'row',
     marginBottom: 8,
+  },
+  price: {
+    fontSize: 16,
+    color: '#007BFF',
+    fontWeight: 'bold',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#008000',
-    height: 40,
+    height: 30,
     borderRadius: 5,
     margin: 10,
-    marginTop: 120,
-    width: 100,
+    width: 80,
+    marginRight: 20,
   },
   buttonText: {
     color: '#fff',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  cartButton: {
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    margin: 10,
+    alignItems: 'center',
+  },
+  cartButtonText: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 });
 

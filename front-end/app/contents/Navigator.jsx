@@ -1,18 +1,19 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { NavigationContainer } from '@react-navigation/native';
- 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Webdev from './Webdev';
-import Whatnext from './Whatnext';
-import Journey from './Journey';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Dashboard from './Dashboard';
- 
-// Define the Tab Navigator
+import Journey from './Journey';
+import Courses from './Courses';
+import Logout from './Logout';
+import { useUser } from '../UserContext'; // Import useUser
+
 const Tab = createBottomTabNavigator();
 
-function TabNavigator() {
+const TabNavigator = () => {
+  const { userId } = useUser();  
+
+  console.log('User ID in TabNavigator:', userId);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -22,15 +23,15 @@ function TabNavigator() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Journey') {
             iconName = focused ? 'map' : 'map-outline';
-          } else if (route.name === 'Whatnext') {
+          } else if (route.name === 'Courses') {
             iconName = focused ? 'stats-chart' : 'stats-chart-outline';
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarStyle: {
-          backgroundColor: '#e5f6e0',  
-          borderTopColor: '#004d00',  
-          borderTopWidth: 1,  
+          backgroundColor: '#e5f6e0',
+          borderTopColor: '#004d00',
+          borderTopWidth: 1,
         },
       })}
       tabBarOptions={{
@@ -38,44 +39,20 @@ function TabNavigator() {
         inactiveTintColor: 'gray',
       }}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} />
-      <Tab.Screen name="Journey" component={Journey} />
-      <Tab.Screen name="Whatnext" component={Whatnext} />
-      {/* <Tab.Screen name="Whatnext" component={Whatnext} /> */}
+      <Tab.Screen name="Dashboard">
+        {(props) => <Dashboard {...props} userId={userId} />}
+      </Tab.Screen>
+      <Tab.Screen name="Journey">
+        {(props) => <Journey {...props} userId={userId} />}
+      </Tab.Screen>
+      <Tab.Screen name="Courses">
+        {(props) => <Courses {...props} userId={userId} />}
+      </Tab.Screen>
+      <Tab.Screen name="Logout">
+        {(props) => <Logout {...props} userId={userId} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
-}
+};
 
-// Define the Stack Navigator
-const Stack = createStackNavigator();
-
-// function Navigator() {
-//   return (
-//     <Stack.Navigator
-//       screenOptions={{
-//         headerStyle: {
-//           backgroundColor: '#004d00', // Green color for top bar
-//         },
-//         headerTintColor: '#fff', // White color for text in top bar
-//         headerTitleStyle: {
-//           fontWeight: 'bold',
-//         },
-//         headerBackTitleVisible: false, // Hide the back button text
-//         headerBackImage: () => (
-//           <Icon name="arrow-back" size={24} color="#fff" style={{ marginLeft: 10 }} />
-//         ),
-//       }}
-//     >
-    
-     
-//       <Stack.Screen
-//         name="TabNavigator"
-//         component={TabNavigator}
-//         options={{ headerShown: false }} // Hide header for the Tab Navigator
-//       />
-//       <Stack.Screen name="Webdev" component={Webdev} />
-//     </Stack.Navigator>
-//   );
-// }
-
- export default TabNavigator;
+export default TabNavigator;
