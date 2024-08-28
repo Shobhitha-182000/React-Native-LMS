@@ -12,7 +12,7 @@ const localImages = {
   'Python Developer': require('../../assets/courseimage/python develop.png'),
   'Software Tester': require('../../assets/courseimage/softwaretesting1.jpg'),
   'Web Developer': require('../../assets/courseimage/mern stack.png'),
-  // Default placeholder image
+  
   'default': require('./fullstack.png'),
 };
 
@@ -24,7 +24,8 @@ const Courses = ({ userId }) => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.2:8000/enrollCourse/${userId}`);
+        const response = await axios.get(`http://localhost:5000/enrollCourse/${userId}`);
+        // const response = await axios.get(`http://10.0.2.2:8000/enrollCourse/${userId}`);
         console.log('Courses data:', response.data);
         setCourses(response.data.courses || []); // Adjust based on actual response structure
       } catch (error) {
@@ -80,9 +81,13 @@ const Courses = ({ userId }) => {
     );
   };
 
-  // Function to get the correct image source based on course name
+  
   const getImageSource = (courseName) => {
     return localImages[courseName] || localImages['default']; // Use default image if courseName not found
+  };
+
+  const handleImagePress = (course) => {
+    navigation.navigate('Webdev', { videoUrl: course.videoUrl });
   };
 
   return (
@@ -103,7 +108,8 @@ const Courses = ({ userId }) => {
               />
             </TouchableOpacity>
             <View style={styles.content}>
-              <Text style={styles.title}>{item.courseName}</Text>
+            <TouchableOpacity onPress={handleImagePress}> <Text style={styles.title}>{item.courseName}</Text></TouchableOpacity>
+               
               <View style={styles.ratingContainer}>
                 {renderStars(item.rating)}
               </View>
@@ -181,16 +187,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#008000',
-    height: 30,
+    height: 40,
     borderRadius: 5,
     margin: 10,
     marginTop: 120,
-    width: 80,
+    width: 90,
     marginRight: 20,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

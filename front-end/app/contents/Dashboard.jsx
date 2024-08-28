@@ -12,7 +12,8 @@ export default function Dashboard({userId}) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);
+        const response = await axios.get(`http://localhost:5000/studylogin/${userId}`);
+        // const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);
         console.log('Response data:', response.data);
         setUsername(response.data.username);
       } catch (error) {

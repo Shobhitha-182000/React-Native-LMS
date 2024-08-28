@@ -18,8 +18,8 @@ const MainPage = () => {
 
   const handleSignup = async () => {
     try {
-      // const response = await axios.post("http://localhost:5000/studysignups", { username, email, password });
-      const response = await axios.post("http://10.0.2.2:8000/studysignups", { username, email, password });
+      const response = await axios.post("http://localhost:5000/studysignups", { username, email, password });
+      // const response = await axios.post("http://10.0.2.2:8000/studysignups", { username, email, password });
       setMessage('Signup successful!');
       console.log('Signup response:', response.data);
       setIsLoginScreen(true);
@@ -45,7 +45,9 @@ const MainPage = () => {
     
      
     try {
-      const response = await axios.post("http://10.0.2.2:8000/studylogin", { email, password });
+      const response = await axios.post("http://localhost:5000/studylogin", { email, password });
+      // const response = await axios.post("http://10.0.2.2:8000/studylogin", { email, password });
+
       const userId = response.data._id;
       console.log('Login successful:', userId);
       updateUserId(userId);
@@ -76,7 +78,7 @@ const MainPage = () => {
         <View style={styles.textContainer}>
           <Text style={styles.heading}>Welcome!!!</Text>
          
-          <Text style={styles.heading1}>Learning and Development</Text>
+          <Text style={styles.heading1}>Embark on Your Path to Growth</Text>
         </View>
         <Image source={require("../../assets/images/bg1.jpg")} style={styles.image} />
       </View>
@@ -168,7 +170,8 @@ export default MainPage;
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#004d00",
+    backgroundColor:'#d0f0c0',
+    // backgroundColor: "#004d00",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   heading: {
-    color: "white",
+    color: "#004d00",
     fontSize: 24,
     fontWeight: "bold",
     paddingVertical: 5,

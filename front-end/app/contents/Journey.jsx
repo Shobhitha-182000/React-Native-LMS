@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions, 
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
-import imagePaths from './imagePaths'; // Ensure this path is correct
+import imagePaths from './imagePaths';
 
 const courses = [
   { id: '1', name: 'Web Development', image: imagePaths.webDevelopment, description: 'Learn the fundamentals of web development.', rating: '4.5/5', price: '$49.99' },
@@ -22,9 +22,14 @@ const Journey = ({ userId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);
-        console.log('Response data:', response.data);
-        setEnrolledCourses(response.data.enrolledCourses || []);
+        const response = await axios.get(`http://localhost:5000/enrollCourse/${userId}`);
+        console.log('Courses data:', response.data);
+
+        if (response.data && response.data.courses) {
+          const courseIds = response.data.courses.map(course => course.courseId);
+          console.log('Enrolled course IDs:', courseIds);
+          setEnrolledCourses(courseIds);
+        }
       } catch (error) {
         console.log('Error fetching data:', error);
       }
@@ -49,15 +54,14 @@ const Journey = ({ userId }) => {
       Alert.alert('Course Already Added', 'This course is already in your cart.');
     } else {
       try {
-        await axios.post(`http://10.0.2.2:8000/enrollCourse/${userId}`, {
+        await axios.post(`http://localhost:5000/enrollCourse/${userId}`, {
           courseId: course.id,
           courseName: course.name,
           description: course.description,
           imagePath: course.image, // Pass image path if needed
-          rating: parseFloat(course.rating),
+          rating: parseFloat(course.rating.split('/')[0]),
         });
-        // Update the state to include the newly enrolled course
-        setEnrolledCourses([...enrolledCourses, course.id]);
+        setEnrolledCourses(prev => [...prev, course.id]);
         Alert.alert('Course Added', 'The course has been added to your cart.');
       } catch (error) {
         console.log('Error enrolling course:', error);
@@ -80,8 +84,11 @@ const Journey = ({ userId }) => {
         ))}
       </View>
     );
+   
   };
-
+  const handleImagePress = (course) => {
+    navigation.navigate('Webdev', { videoUrl: course.videoUrl });
+  };
   return (
     <View style={styles.container}>
       <FlatList
@@ -92,13 +99,14 @@ const Journey = ({ userId }) => {
             <View style={styles.imageContainer}>
               <Image source={item.image} style={styles.image} />
             </View>
+             
             <View style={styles.content}>
-              <Text style={styles.title}>{item.name}</Text>
-              <Text style={styles.description}>{item.description}</Text>
+            <TouchableOpacity onPress={handleImagePress}> <Text style={styles.title}>{item.name}</Text></TouchableOpacity>
+               
+              
               <View style={styles.ratingContainer}>
                 {renderStars(item.rating)}
               </View>
-              <Text style={styles.price}>{item.price}</Text>
             </View>
             <TouchableOpacity
               style={styles.buttonContainer}
@@ -161,45 +169,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#001F3F',
   },
-  description: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: '#333',
-  },
   ratingContainer: {
     flexDirection: 'row',
     marginBottom: 8,
-  },
-  price: {
-    fontSize: 16,
-    color: '#007BFF',
-    fontWeight: 'bold',
   },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#008000',
-    height: 30,
+    height: 40,
     borderRadius: 5,
     margin: 10,
-    width: 80,
+    width: 100,
     marginRight: 20,
+    marginTop:120
   },
   buttonText: {
     color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
-  },
-  cartButton: {
-    padding: 10,
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    margin: 10,
-    alignItems: 'center',
-  },
-  cartButtonText: {
-    color: '#fff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
   },
 });

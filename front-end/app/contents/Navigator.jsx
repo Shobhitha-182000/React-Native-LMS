@@ -4,8 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Dashboard from './Dashboard';
 import Journey from './Journey';
 import Courses from './Courses';
-import Logout from './Logout';
+ 
 import { useUser } from '../UserContext'; // Import useUser
+import Profile from './Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,6 +26,8 @@ const TabNavigator = () => {
             iconName = focused ? 'map' : 'map-outline';
           } else if (route.name === 'Courses') {
             iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline'; // Use profile icon
           }
           return <Icon name={iconName} size={size} color={color} />;
         },
@@ -48,8 +51,8 @@ const TabNavigator = () => {
       <Tab.Screen name="Courses">
         {(props) => <Courses {...props} userId={userId} />}
       </Tab.Screen>
-      <Tab.Screen name="Logout">
-        {(props) => <Logout {...props} userId={userId} />}
+      <Tab.Screen name="Profile">
+        {(props) => <Profile {...props} userId={userId} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
