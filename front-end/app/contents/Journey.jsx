@@ -6,12 +6,12 @@ import axios from 'axios';
 import imagePaths from './imagePaths';
 
 const courses = [
-  { id: '1', name: 'Web Development', image: imagePaths.webDevelopment, description: 'Learn the fundamentals of web development.', rating: '4.5/5', price: '$49.99' },
-  { id: '2', name: 'Java Developer', image: imagePaths.javaDeveloper, description: 'Master Java programming with practical examples.', rating: '3/5', price: '$59.99' },
-  { id: '3', name: 'Machine Learning', image: imagePaths.machineLearning, description: 'Explore machine learning algorithms and their applications.', rating: '4.8/5', price: '$69.99' },
-  { id: '4', name: 'Python Developer', image: imagePaths.pythonDeveloper, description: 'Become proficient in Python programming.', rating: '4.6/5', price: '$79.99' },
-  { id: '5', name: 'Software Tester', image: imagePaths.softwareTester, description: 'Learn techniques for effective software testing.', rating: '5/5', price: '$79.99' },
-  { id: '6', name: 'Web Developer', image: imagePaths.webDeveloperMERN, description: 'Understand the principles of full-stack web development.', rating: '1/5', price: '$79.99' },
+  { id: '1', name: 'Web Development', image: imagePaths.webDevelopment, description: 'Learn the fundamentals of web development.', rating: '4.5/5',videoUrl:"hnVOvvbQrwA"  },
+  { id: '2', name: 'Java Developer', image: imagePaths.javaDeveloper, description: 'Master Java programming with practical examples.', rating: '3/5', videoUrl:"fMMz9UUjFY8&list=PLhvdldYcnZMku_viVb2tU7NuW5DZxwIfw"  },
+  { id: '3', name: 'Machine Learning', image: imagePaths.machineLearning, description: 'Explore machine learning algorithms and their applications.', rating: '4.8/5', videoUrl: 'AYgMefUlKq8' },
+  { id: '4', name: 'Python Developer', image: imagePaths.pythonDeveloper, description: 'Become proficient in Python programming.', rating: '4.6/5', videoUrl: 'KEku-6CBX6M&list=PL9ooVrP1hQOE4KoZLUP4LgBwFH2IJCQs6' },
+  { id: '5', name: 'Software Tester', image: imagePaths.softwareTester, description: 'Learn techniques for effective software testing.', rating: '5/5', videoUrl: 'E2t5XbWwj7I&list=PLL34mf651faM_nn8uKlnwbQPw5zSh_F84' },
+  { id: '6', name: 'App Developer', image: imagePaths.webDeveloperMERN, description: 'Understand the principles of full-stack app development.', rating: '1/5', videoUrl: '7nQsQ0rvYqQ' },
 ];
 
 const Journey = ({ userId }) => {
@@ -22,7 +22,8 @@ const Journey = ({ userId }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/enrollCourse/${userId}`);
+        // const response = await axios.get(`http://localhost:5000/enrollCourse/${userId}`);
+        const response = await axios.get(`http://10.0.2.2:8000/enrollCourse/${userId}`);
         console.log('Courses data:', response.data);
 
         if (response.data && response.data.courses) {
@@ -54,11 +55,14 @@ const Journey = ({ userId }) => {
       Alert.alert('Course Already Added', 'This course is already in your cart.');
     } else {
       try {
-        await axios.post(`http://localhost:5000/enrollCourse/${userId}`, {
+        // await axios.post(`http://localhost:5000/enrollCourse/${userId}`
+        await axios.post(`http://10.0.2.2:8000/enrollCourse/${userId}`, {
           courseId: course.id,
           courseName: course.name,
           description: course.description,
-          imagePath: course.image, // Pass image path if needed
+          imagePath: course.image,
+          videoUrl:course.videoUrl,
+          description:course.description,
           rating: parseFloat(course.rating.split('/')[0]),
         });
         setEnrolledCourses(prev => [...prev, course.id]);
@@ -87,7 +91,7 @@ const Journey = ({ userId }) => {
    
   };
   const handleImagePress = (course) => {
-    navigation.navigate('Webdev', { videoUrl: course.videoUrl });
+    // navigation.navigate('Webdev', { videoUrl: course.videoUrl });
   };
   return (
     <View style={styles.container}>
@@ -101,7 +105,7 @@ const Journey = ({ userId }) => {
             </View>
              
             <View style={styles.content}>
-            <TouchableOpacity onPress={handleImagePress}> <Text style={styles.title}>{item.name}</Text></TouchableOpacity>
+            <Text style={styles.title}>{item.name}</Text> 
                
               
               <View style={styles.ratingContainer}>

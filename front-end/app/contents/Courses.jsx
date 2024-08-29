@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList, Dimensions }
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import axios from 'axios';
+import YoutubePlayer from 'react-native-youtube-iframe';
 
 // Static mapping for image paths
 const localImages = {
@@ -12,7 +13,6 @@ const localImages = {
   'Python Developer': require('../../assets/courseimage/python develop.png'),
   'Software Tester': require('../../assets/courseimage/softwaretesting1.jpg'),
   'Web Developer': require('../../assets/courseimage/mern stack.png'),
-  
   'default': require('./fullstack.png'),
 };
 
@@ -24,10 +24,10 @@ const Courses = ({ userId }) => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/enrollCourse/${userId}`);
-        // const response = await axios.get(`http://10.0.2.2:8000/enrollCourse/${userId}`);
+        // Update the URL to your server endpoint if necessary
+        const response = await axios.get(`http://10.0.2.2:8000/enrollCourse/${userId}`);
         console.log('Courses data:', response.data);
-        setCourses(response.data.courses || []); // Adjust based on actual response structure
+        setCourses(response.data.courses || []); 
       } catch (error) {
         console.log('Error fetching courses:', error);
       }
@@ -49,6 +49,10 @@ const Courses = ({ userId }) => {
 
   const handleCardPress = (id) => {
     navigation.navigate('CourseDetails', { courseId: id });
+  };
+
+  const handleImagePress = (course) => {
+    navigation.navigate('VideoPlayer', { videoUrl: course.videoUrl });
   };
 
   const renderStars = (rating) => {
@@ -81,18 +85,12 @@ const Courses = ({ userId }) => {
     );
   };
 
-  
   const getImageSource = (courseName) => {
     return localImages[courseName] || localImages['default']; // Use default image if courseName not found
   };
 
-  const handleImagePress = (course) => {
-    navigation.navigate('Webdev', { videoUrl: course.videoUrl });
-  };
-
   return (
     <View style={styles.container}>
-   
       <FlatList
         key={numColumns}
         data={courses}
@@ -108,18 +106,17 @@ const Courses = ({ userId }) => {
               />
             </TouchableOpacity>
             <View style={styles.content}>
-            <TouchableOpacity onPress={handleImagePress}> <Text style={styles.title}>{item.courseName}</Text></TouchableOpacity>
-               
-              <View style={styles.ratingContainer}>
+              <Text style={styles.title}>{item.courseName}</Text> 
+              {/* <View style={styles.ratingContainer}>
                 {renderStars(item.rating)}
-              </View>
-              <Text style={styles.price}>{item.price}</Text>
+              </View> */}
+              <Text style={styles.price}>{item.description}</Text>
             </View>
             <TouchableOpacity
               style={styles.buttonContainer}
-              onPress={() => handleCardPress(item._id)}
+              onPress={() => handleImagePress(item)}
             >
-              <Text style={styles.buttonText}>View Details</Text>
+              <Text style={styles.buttonText}>Watch</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -180,7 +177,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 16,
-    color: '#007BFF',
+    color: 'grey',
     fontWeight: 'bold',
   },
   buttonContainer: {

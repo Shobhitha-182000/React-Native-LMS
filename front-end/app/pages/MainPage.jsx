@@ -18,8 +18,8 @@ const MainPage = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/studysignups", { username, email, password });
-      // const response = await axios.post("http://10.0.2.2:8000/studysignups", { username, email, password });
+      // const response = await axios.post("http://localhost:5000/studysignups", { username, email, password });
+      const response = await axios.post("http://10.0.2.2:8000/studysignups", { username, email, password });
       setMessage('Signup successful!');
       console.log('Signup response:', response.data);
       setIsLoginScreen(true);
@@ -45,8 +45,8 @@ const MainPage = () => {
     
      
     try {
-      const response = await axios.post("http://localhost:5000/studylogin", { email, password });
-      // const response = await axios.post("http://10.0.2.2:8000/studylogin", { email, password });
+      // const response = await axios.post("http://localhost:5000/studylogin", { email, password });
+      const response = await axios.post("http://10.0.2.2:8000/studylogin", { email, password });
 
       const userId = response.data._id;
       console.log('Login successful:', userId);

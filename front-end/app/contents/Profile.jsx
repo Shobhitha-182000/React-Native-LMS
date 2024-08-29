@@ -15,7 +15,8 @@ const Profile = ({userId}) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/studylogin/${userId}`);  
+        // const response = await axios.get(`http://localhost:5000/studylogin/${userId}`);  
+        const response = await axios.get(`http://10.0.2.2:8000/studylogin/${userId}`);  
         setUserData(response.data);
         setUsername(response.data.username);
         setEmail(response.data.email);
@@ -43,7 +44,9 @@ const Profile = ({userId}) => {
 
   const handleSaveChanges = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/updateUserProfile', {
+      // const response = await axios.post('http://localhost:5000/updateUserProfile'
+       
+      const response = await axios.post('http://10.0.2.2:8000/updateUserProfile', {
         username,
         email,
         profileImage: imageUri, // Handle the image upload separately if needed
